@@ -2,6 +2,7 @@ package com.example.feignclientexample;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,7 +16,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +32,9 @@ class GreetingProxyControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private JwtDecoder jwtDecoder;
 
     @AfterAll
     static void tearDown() throws IOException {
@@ -58,7 +65,10 @@ class GreetingProxyControllerTest {
                         "\"message\":\"Hello, Alice!\"" +
                         "}"));
 
-        mockMvc.perform(get("/api/greetings/Alice"))
+        mockMvc.perform(get("/api/greetings/Alice")
+                        .with(jwt()
+                                .jwt(token -> token.tokenValue("test-token"))
+                                .authorities(new SimpleGrantedAuthority("SCOPE_USER"))))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{" +
                         "\"message\":\"Hello, Alice!\"" +
@@ -68,5 +78,21 @@ class GreetingProxyControllerTest {
         assertThat(recordedRequest).isNotNull();
         assertThat(recordedRequest.getMethod()).isEqualTo("GET");
         assertThat(recordedRequest.getPath()).isEqualTo("/api/external/greetings/Alice");
+        assertThat(recordedRequest.getHeader("Authorization")).startsWith("Bearer ");
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenTokenIsMissing() throws Exception {
+        mockMvc.perform(get("/api/greetings/Alice"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenScopeIsMissing() throws Exception {
+        mockMvc.perform(get("/api/greetings/Alice")
+                        .with(jwt()
+                                .jwt(token -> token.tokenValue("test-token"))
+                                .authorities(new SimpleGrantedAuthority("SCOPE_OTHER"))))
+                .andExpect(status().isForbidden());
     }
 }
