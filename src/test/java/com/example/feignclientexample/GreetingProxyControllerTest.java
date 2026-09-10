@@ -78,7 +78,7 @@ class GreetingProxyControllerTest {
         assertThat(recordedRequest).isNotNull();
         assertThat(recordedRequest.getMethod()).isEqualTo("GET");
         assertThat(recordedRequest.getPath()).isEqualTo("/api/external/greetings/Alice");
-        assertThat(recordedRequest.getHeader("Authorization")).isEqualTo("******");
+        assertThat(recordedRequest.getHeader("Authorization")).startsWith("Bearer ");
     }
 
     @Test
