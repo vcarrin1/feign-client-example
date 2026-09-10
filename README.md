@@ -2,6 +2,8 @@
 
 Simple Spring Boot project that uses a Feign client to work with a REST API and secures the API with Auth0-backed JWT validation.
 
+Requires Java 25.
+
 ## What it does
 
 - exposes `/api/external/greetings/{name}` as a sample REST API
