@@ -1,0 +1,5 @@
+com/example/feignclientexample/client/JsonPlaceholderClient.class
+com/example/feignclientexample/model/Todo.class
+com/example/feignclientexample/service/TodoService.class
+com/example/feignclientexample/FeignClientExampleApplication.class
+com/example/feignclientexample/web/TodoController.class
