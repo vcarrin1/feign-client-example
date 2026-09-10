@@ -2,6 +2,11 @@
 
 Simple Spring Boot project that uses a Feign Client to work with a REST API.
 
+## Requirements
+
+- Java 25
+- Maven
+
 ## What it does
 
 - exposes `/api/external/greetings/{name}` as a sample REST API
