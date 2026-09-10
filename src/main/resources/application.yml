@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: feign-client-example
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH0_ISSUER_URI:https://dev-uiyohlg5bc7ywx10.us.auth0.com/}
+          audiences:
+            - ${AUTH0_AUDIENCE:demo-authorization-api}
