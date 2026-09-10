@@ -4,6 +4,11 @@ Simple Spring Boot project that uses a Feign client to work with a REST API and 
 
 Requires Java 25.
 
+## Requirements
+
+- Java 25
+- Maven
+
 ## What it does
 
 - exposes `/api/external/greetings/{name}` as a sample REST API
